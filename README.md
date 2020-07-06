@@ -60,13 +60,35 @@ Iteration number x, the message where the `ts` from the message jumps to the nex
 - Since the jump to the next minute has occured, the `timestamp` variable is overwritten with the new minute, the `unique_uids` set is cleared and the `sublist_per_min` list is cleared. Then the `subdict_per_min` with the current `uid` and `ts` is added to the `sublist_per_min`.
 
 Last iteration:
-- All the 1'000'000 messages are processed and a timeout occurs after 5 seconds. The loop has ended.
+- All the messages are processed and a timeout occurs after 5 seconds. The loop has ended.
 
 ### Performance indicator
 Before the iteration through all the messages starts, on line 43, we save the current time in a variable named `start`. After the loop the time is saved in a variable named `end`. By subtracting `start` from `end` the total amout of seconds the program has run is computed, this is saved in `timedelta_seconds`. Simply by dividing the number of processed messages, which was saved in the `counter` variable by the seconds saved in `timedelta_seconds`, we receive a simple performance indicator: the number of messages processed in a second.
 
 ### Notes on the solution
 The solution and loop proposed would only work as long as messages are received in order, i.e. the timestamp is ordered. Due to time constraints I left the solution at that but I will explain my thoughts how the solution could be improved below in the Additional Questions section.
+
+### Results
+There were 1'000'000 messages in the sample data set. The program took 91 seconds to run. 10989 messages were processed per second
+
+Number of unique users per minute:
+- For minute 2016-07-11 13:39 there were 16193 unique users
+- For minute 2016-07-11 13:40 there were 41130 unique users
+- For minute 2016-07-11 13:41 there were 47369 unique users
+- For minute 2016-07-11 13:42 there were 49488 unique users
+- For minute 2016-07-11 13:43 there were 47863 unique users
+- For minute 2016-07-11 13:44 there were 40439 unique users
+- For minute 2016-07-11 13:45 there were 42859 unique users
+- For minute 2016-07-11 13:46 there were 47312 unique users
+- For minute 2016-07-11 13:47 there were 48180 unique users
+- For minute 2016-07-11 13:48 there were 47981 unique users
+- For minute 2016-07-11 13:49 there were 42194 unique users
+- For minute 2016-07-11 13:50 there were 45070 unique users
+- For minute 2016-07-11 13:51 there were 43659 unique users
+- For minute 2016-07-11 13:52 there were 48611 unique users
+- For minute 2016-07-11 13:53 there were 42742 unique users
+- For minute 2016-07-11 13:54 there were 51930 unique users
+- For minute 2016-07-11 13:55 there were 45471 unique users
 
 ## Additional Questions
 
