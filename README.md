@@ -66,7 +66,7 @@ Last iteration:
 Before the iteration through all the messages starts, on line 43, we save the current time in a variable named `start`. After the loop the time is saved in a variable named `end`. By subtracting `start` from `end` the total amout of seconds the program has run is computed, this is saved in `timedelta_seconds`. Simply by dividing the number of processed messages, which was saved in the `counter` variable by the seconds saved in `timedelta_seconds`, we receive a simple performance indicator: the number of messages processed in a second.
 
 ### Notes on the solution
-The solution and loop proposed would only work as long as messages are received in order, i.e. the timestamp is ordered. Due to time constraints I left the solution at that but I will explain my thoughts how the solution could be improved below in the Additional Questions section.
+The solution and loop proposed would only work as long as messages are received in order, i.e. the timestamp is ordered. Due to time constraints I left the solution at that but I will explain my thoughts on how the solution could be improved below in the Additional Questions section.
 
 ### Results
 There were 1'000'000 messages in the sample data set. The program took 91 seconds to run. 10989 messages were processed per second
