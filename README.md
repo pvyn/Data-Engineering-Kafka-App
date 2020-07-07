@@ -3,15 +3,15 @@
 ## How to build and run the code on Linux or OS X
 Run the following commands in a CLI (command line interface).
 
-Requirements: Kafka and Python are already installed.
+Requirements: Kafka and Python are already installed. PWD is where the kafka folder is at.
 
 1. Run zookeeper via
 
-    `zookeeper-server-start.bat config\zookeeper.properties`
+    `zookeeper-server-start.bat config/zookeeper.properties`
     
 2. Run a kafka broker via
 
-    `kafka-server-start.bat config\server.properties`
+    `kafka-server-start.bat config/server.properties`
     
 3. Open a terminal window and create a topic via following command
 
@@ -21,7 +21,7 @@ Requirements: Kafka and Python are already installed.
 
     `gzcat stream.gz | kafka-console-producer.bat --broker-list localhost:9092 --topic doodle_challenge_sample`
     
-5. Go to the location of the doodle_app.py script with the cd command and run the script. (This requires that the following packages have been installed via pip install: datetime, kafka-python)
+5. Go to the location of the doodle_app.py script with the cd command and run the script. (This requires that the following packages have been installed via pip install: kafka-python)
     
 
 ## Report: what was done
@@ -63,13 +63,13 @@ Last iteration:
 - All the messages are processed and a timeout occurs after 5 seconds. The loop has ended.
 
 ### Performance indicator
-Before the iteration through all the messages starts, on line 43, we save the current time in a variable named `start`. After the loop the time is saved in a variable named `end`. By subtracting `start` from `end` the total amout of seconds the program has run is computed, this is saved in `timedelta_seconds`. Simply by dividing the number of processed messages, which was saved in the `counter` variable by the seconds saved in `timedelta_seconds`, we receive a simple performance indicator: the number of messages processed in a second.
+Before the iteration through all the messages starts, on line 43, we save the current time in a variable named `start`. After the loop the time is saved in a variable named `end`. By subtracting `start` from `end` the total amout of seconds the program has run is computed, this is saved in `timedelta_seconds`. Simply by dividing the number of processed messages, which was saved in the `counter` variable by the seconds saved in `timedelta_seconds` minus 5 seconds, we receive a simple performance indicator: the number of messages processed in a second. (The 5 seconds are subtracted to not count in the time that is waited until the consumer times out.)
 
 ### Notes on the solution
 The solution and loop proposed would only work as long as messages are received in order, i.e. the timestamp is ordered. Due to time constraints I left the solution at that but I will explain my thoughts on how the solution could be improved below in the Additional Questions section.
 
 ### Results and Performance
-There were 1'000'000 messages in the sample data set. The program took 91 seconds to run. 10989 messages were processed per second
+There were 1'000'000 messages in the sample data set. The program took 86 seconds to run. 11628 messages were processed per second
 
 Number of unique users per minute:
 - For minute 2016-07-11 13:39 there were 16193 unique users
