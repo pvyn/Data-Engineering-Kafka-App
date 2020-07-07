@@ -27,17 +27,17 @@ Requirements: Kafka and Python are already installed.
 ## Report: what was done
 Firstly, the packages that will be used in the script are imported. Then in a first step the KafkaConsumer is set up. The arguments it takes are:
 - 'doodle_challenge_sample': the name of the topic
-- bootstrap_servers = ['localhost:9092']: The location of the kafka broker
+- bootstrap_servers = ['localhost:9092']: the location of the kafka broker
 - auto_offset_reset = 'earliest': consumer starts reading at the latest committed offset
 - enable_auto_commit = True: offset is committed every interval
 - auto_commit_interval_ms = 1000ms: interval between two commits
 - group_id = 'user-counter': the consumer group to which the consumer belongs
 - consumer_timeout_ms = 5000: after 5 seconds the message iterator is ended
-- value_deserializer = json_deserializer: The json_deserializer is a function created to turn the messages arriving from kafka from byte to string with the .decode('utf-8') method.
+- value_deserializer = json_deserializer: the json_deserializer is a function created to turn the messages arriving from kafka from byte to string with the .decode('utf-8') method.
 
 Subsequently, the KafkaProducer is set up. The arguments it takes are:
-- bootstrap_servers = ['localhost:9092']: The location of the kafka broker
-- value_serializer = json_serializer: The json_serializer is a function created to turn the messages sent to kafka from string to byte with the .encode('utf-8') method.
+- bootstrap_servers = ['localhost:9092']: the location of the kafka broker
+- value_serializer = json_serializer: the json_serializer is a function created to turn the messages sent to kafka from string to byte with the .encode('utf-8') method.
 
 ### Looping through the messages and the counting mechanism:
 - We loop through every message that the consumer finds. This will be where the offset is currently at. After doing the initial load of the data the offset will be at 0.
@@ -68,7 +68,7 @@ Before the iteration through all the messages starts, on line 43, we save the cu
 ### Notes on the solution
 The solution and loop proposed would only work as long as messages are received in order, i.e. the timestamp is ordered. Due to time constraints I left the solution at that but I will explain my thoughts on how the solution could be improved below in the Additional Questions section.
 
-### Results
+### Results and Performance
 There were 1'000'000 messages in the sample data set. The program took 91 seconds to run. 10989 messages were processed per second
 
 Number of unique users per minute:
@@ -90,7 +90,26 @@ Number of unique users per minute:
 - For minute 2016-07-11 13:54 there were 51930 unique users
 - For minute 2016-07-11 13:55 there were 45471 unique users
 
+#### When the data was output
+Since the messages are ordered in time, the fastest way to output the results was to read all messages from the same minute and as soon as a message from the next minute arrives, compute the number of unique users and print the number to stdout / send it to Kafka via the producer.
+
+#### Error in counting
+Again, assuming messages are ordered in time, there should not be an error in counting with the process above.
+
 ## Additional Questions
 
+### How scaling would work
+In the solution above, there is 1 kafka broker and 1 consumer running, while the topic has 1 partition. The data load could be be balanced across multiple consumers if we had multiple partitions to read from. If we had created 3 partitions for our doodle_challenge_sample topic, there could be 3 consumers that read the data in parallel from those topic partitions. 
 
+If not specified otherwise, the producer will send the data round robin to the three partitions, so messages from the same `ts` minute would not end up in the same partition. Then the solution above would not count correctly. There should be a way to specify a key so that messages with the same `ts` minute would end up in the same partition. 
 
+In general it would make sense to also have multiple brokers running, so that when the broker breaks down, the application would not have to stop. It's a good idea to have at least 3 broker running, so that when one broker breaks down and the other is down for maintenance, there is still one broker working. I.e. the topic should have a replication factor of at least 3.
+
+### How to cope with the app crashing mid day/mid year
+Since the results are sent out after the end of every minute, the only issue with the script described above is within the minute that was being processed while the app crashed. It would be best to to have a mechanism that automatically resetts to offset to the first message of the new "minute", so that all of those messages are reprocessed for counting the number of unique users in that minute.
+
+### If events were not strictly ordered
+There should be a way to create objects for every `ts` minute that continually gets added unique user ids to it. The result should then not be sent to kafka with the first occurance of the next `ts` minute but the app would wait for a specified time until one can be confident that most of the late messages have arrived and the number of unique users has been counted correctly. The most important factor here, also to insure that results are output the fastest way possible, is to decide when the late messages must have finished arriving for a specific `ts` minute.
+
+### Explanation why json is an ideal format
+Json is an industry-standard for api-communication and a light-weight alternative (compared to e.g. xml).
