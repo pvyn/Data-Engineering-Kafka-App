@@ -64,8 +64,8 @@ for message in consumer:
 
 end = datetime.now()
 timedelta_seconds = round((end-start).total_seconds())
-messages_per_second = counter/timedelta_seconds
+messages_per_second = counter/(timedelta_seconds-5) #subtract timeout of 5s
 
 print(f'There were {counter} messages in the set')
-print(f'The program took {timedelta_seconds} seconds to run')
+print(f'The program took {timedelta_seconds-5} seconds to run')
 print(f'{round(messages_per_second)} messages were processed per second')
