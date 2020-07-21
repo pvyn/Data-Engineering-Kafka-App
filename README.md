@@ -1,4 +1,7 @@
-# Data-Engineer-Challenge
+# Data-Engineering-Kafka-App
+This was a data engineering challenge about building an app that consumes data from Kafka, calculates something from the data, and sends data back to Kafka. 
+
+Python was chosen as the programming language for this app. The calculation from the data that was done was "unique users per minute". The app also shows a performance indicator, showing how many messages per second are processed.
 
 ## How to build and run the code on Linux or OS X
 Run the following commands in a CLI (command line interface).
